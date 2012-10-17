@@ -1,0 +1,26 @@
+{
+  "name": "validator",
+  "version": "0.0.1",
+  "description": "dictionary matching/validation",
+  "keywords": [
+    "json",
+    "match"
+  ],
+  "author": {
+    "name": "Ivan Nikolic [lesh]",
+    "email": "lesh@sysphere.org"
+  },
+  "dependencies": {
+    "underscore": "1.3.x",
+    "helpers": "git://github.com/leshy/nodejs-helpers.git"
+  },
+  "main": "index",
+  "engines": {
+    "node": "node >= 0.4.x"
+  },
+  "_id": "validator@0.0.1",
+  "dist": {
+    "shasum": "ba0ea9faf1b253ca661a684194de5a6d4e991c2a"
+  },
+  "_from": "validator@git://github.com/leshy/nodejs-validator.git"
+}
