@@ -108,6 +108,8 @@ exports.Name = (test) ->
     test.done()
 
 exports.Serialize = (test) ->
-    x = new v.Validator('default', 3).string()
-    console.log(x.json())
+    x = new v.Validator('default', 3).number()
+    serialized = x.serialize()
+    y = new v.Validator(serialized)
+    test.deepEqual y.serialize(), serialized
     test.done()

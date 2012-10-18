@@ -1,16 +1,24 @@
 (function() {
   var Validator, async, defineValidator, helpers, typevalidator, _;
-  var __slice = Array.prototype.slice, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   _ = require('underscore');
   async = require('async');
   helpers = require('helpers');
   exports.Validator = Validator = (function() {
-    function Validator() {
-      var args, val, validate, _ref;
-      validate = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+    function Validator(validate, args, child) {
+      var val, _ref, _ref2, _ref3, _ref4;
       this.validate = validate;
-      this.args = args;
-      switch ((_ref = this.validate) != null ? _ref.constructor : void 0) {
+      this.args = args != null ? args : [];
+      this.child = child;
+      if (((_ref = this.validate) != null ? _ref.constructor : void 0) === Array) {
+        this.args = this.validate[1];
+        this.child = this.validate[2];
+        this.validate = this.validate[0];
+      }
+      if (((_ref2 = this.args) != null ? _ref2.constructor : void 0) === !Array) {
+        this.args = [this.args];
+      }
+      switch ((_ref3 = this.validate) != null ? _ref3.constructor : void 0) {
         case String:
           this.validate = this.functions[this.validate];
           break;
@@ -30,6 +38,9 @@
           if (val.child) {
             this.child = val.child;
           }
+      }
+      if (((_ref4 = this.child) != null ? _ref4.constructor : void 0) === Array) {
+        this.child = new Validator(this.child);
       }
     }
     Validator.prototype.name = function() {
@@ -76,9 +87,6 @@
     Validator.prototype.json = function() {
       return JSON.stringify(this.serialize());
     };
-    Validator.prototype.parse = function(str) {
-      return console.log(str);
-    };
     Validator.prototype.functions = {};
     return Validator;
   })();
@@ -86,15 +94,13 @@
     name = name.toLowerCase();
     Validator.prototype.functions[name] = f;
     return Validator.prototype[name] = function() {
-      var args, v;
+      var args;
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       if (!(this.validate != null)) {
         this.validate = f;
         this.args = args;
       } else {
-        v = new Validator(f);
-        v.args = args;
-        this.addChild(v);
+        this.addChild(new Validator(f, args));
       }
       return this;
     };
@@ -113,9 +119,7 @@
       return callback("wrong type '" + (target != null ? target.constructor.name : void 0) + "', expected '" + type.name + "'");
     }
   };
-  defineValidator("type", function() {
-    var args, callback, data, _i;
-    args = 3 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 2) : (_i = 0, []), data = arguments[_i++], callback = arguments[_i++];
+  defineValidator("type", function(args, data, callback) {
     return typevalidator(_.first(args), data, callback);
   });
   _.map([String, Number, Boolean, Function, Array], function(type) {
