@@ -1,33 +1,44 @@
 (function() {
-  var Validator, async, defineValidator, helpers, typevalidator, _;
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
+  var Validator, async, construct, defineValidator, helpers, typevalidator, _;
+  var __slice = Array.prototype.slice, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   _ = require('underscore');
   async = require('async');
   helpers = require('helpers');
+  construct = function(constructor, args) {
+    var F;
+    F = function() {
+      return constructor.apply(this, args);
+    };
+    F.prototype = constructor.prototype;
+    return new F();
+  };
   exports.Validator = Validator = (function() {
-    function Validator(validate) {
-      var val, _ref;
+    function Validator() {
+      var args, val, validate, _ref;
+      validate = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       this.validate = validate;
+      this.args = args;
+      if (this.args.constructor === !Array) {
+        this.args = [this.args];
+      }
       switch ((_ref = this.validate) != null ? _ref.constructor : void 0) {
         case String:
           this.validate = this.functions[this.validate];
           break;
         case Number:
           val = this.validate;
-          this.validate = function(data, callback) {
-            return this.functions.is(val, data, callback);
-          };
+          this.validate = this.functions.is;
+          this.args = [val];
           break;
         case Object:
           val = this.validate;
-          this.validate = function(data, callback) {
-            return this.functions.children(val, data, callback);
-          };
+          this.validate = this.functions.children;
+          this.args = [val];
           break;
         case Validator:
           val = this.validate;
           this.validate = val.validate;
-          this.name = val.name;
+          this.args = val.args;
           if (val.child) {
             this.child = val.child;
           }
@@ -46,13 +57,15 @@
       if (!this.validate) {
         return this.execChildren(data, callback);
       } else {
-        return this.validate(data, __bind(function(err, data) {
-          if (err) {
-            return callback(err, data);
-          } else {
-            return this.execChildren(data, callback);
-          }
-        }, this));
+        return this.validate.apply(this, this.args.concat([
+          data, __bind(function(err, data) {
+            if (err) {
+              return callback(err, data);
+            } else {
+              return this.execChildren(data, callback);
+            }
+          }, this)
+        ]));
       }
     };
     Validator.prototype.execChildren = function(data, callback) {
@@ -73,30 +86,27 @@
       return console.log(str);
     };
     Validator.prototype.functions = {};
-    Validator.prototype.args = [];
     return Validator;
   })();
   defineValidator = exports.defineValidator = function(name, f) {
     name = name.toLowerCase();
     Validator.prototype.functions[name] = f;
     return Validator.prototype[name] = function() {
-      var args, wrapped;
+      var args, v;
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      wrapped = function(data, callback) {
-        return f.apply(this, args.concat([data, callback]));
-      };
       if (!(this.validate != null)) {
-        this.validate = wrapped;
+        this.validate = f;
+        this.args = args;
       } else {
-        this.addChild(new Validator(wrapped));
+        v = new Validator(f);
+        v.args = args;
+        this.addChild(v);
       }
       return this;
     };
   };
   _.map(require('./validate.js').Validate, function(lvf, name) {
-    return defineValidator(name, function() {
-      var args, callback, target, _i;
-      args = 3 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 2) : (_i = 0, []), target = arguments[_i++], callback = arguments[_i++];
+    return defineValidator(name, function(args, target, callback) {
       return helpers.throwToCallback(lvf)(target, _.first(args), function(err, data) {
         return callback(err, !(err != null) ? target : void 0);
       });
@@ -128,7 +138,7 @@
     if (data === compare) {
       return callback(void 0, data);
     } else {
-      return callback("wrong value, got '" + data + "' (" + (typeof data) + ") and expected '" + compare + "' (" + (typeof compare) + ")");
+      return callback("wrong value, got " + (JSON.stringify(data)) + " (" + (typeof data) + ") and expected " + (JSON.stringify(compare)) + " (" + (typeof compare) + ")");
     }
   });
   defineValidator("default", function(defaultvalue, data, callback) {

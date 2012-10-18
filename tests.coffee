@@ -1,5 +1,5 @@
 
-v = require './index.js'
+v = require './index.coffee'
 
 exports.set = (test) ->
     cnt = 0
@@ -46,6 +46,7 @@ exports.chain = (test) ->
             test.equals err, undefined, "got err: #{err}"
             test.equals data, 'lala', "got wrong data: '#{ data }', expected 'lala'"
             cnt++
+            
     new v.Validator().default('lala').string().feed "FLALA",
         (err,data) ->
             test.equals err, undefined, "got err: #{err}"
@@ -69,8 +70,8 @@ exports.children = (test) ->
 exports.stringInit = (test) ->
     x = new v.Validator('string')
     cnt = 0
-    x.feed('bla',(err,data) -> if not err? then cnt++ else test.fail())
-    x.feed(3,(err,data) -> if err? then cnt++ else test.fail())
+    x.feed('bla',(err,data) -> if not err? then cnt++ else test.fail(err))
+    x.feed(3,(err,data) -> if err? then cnt++ else test.fail('didnt fail'))
     test.equals cnt, 2
     test.done()
 
@@ -85,11 +86,11 @@ exports.isNumInit = (test) ->
     
 exports.NoChild = (test) ->
     x = new v.Validator()
-    test.equals x.validate, undefined
-    test.equals x.child, undefined
+    test.equals x.validate, undefined, "my validate exists!"
+    test.equals x.child, undefined, "my child exists!"
     x.string()
-    test.equals x.child, undefined
-    test.notEqual x.validate, undefined
+    test.equals x.child, undefined, "my child exists!"
+    test.notEqual x.validate, undefined, "my validator doesn't exist!"
     cnt = 0
     x.feed "blaasfasf", (err,data) -> if err? then test.fail() else cnt++
     test.equals cnt, 1
