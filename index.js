@@ -15,7 +15,7 @@
         this.child = this.validate[2];
         this.validate = this.validate[0];
       }
-      if (((_ref2 = this.args) != null ? _ref2.constructor : void 0) === !Array) {
+      if (((_ref2 = this.args) != null ? _ref2.constructor : void 0) !== Array) {
         this.args = [this.args];
       }
       switch ((_ref3 = this.validate) != null ? _ref3.constructor : void 0) {
@@ -82,10 +82,23 @@
       }
     };
     Validator.prototype.serialize = function() {
-      return [this.name(), this.args, this.child ? this.child.serialize() : void 0];
+      return [this.name(), this.serializeArgs(), this.child ? this.child.serialize() : void 0];
     };
-    Validator.prototype.json = function() {
-      return JSON.stringify(this.serialize());
+    Validator.prototype.serializeArgs = function() {
+      return _.map(this.args, function(arg) {
+        return helpers.unimap(arg, function(val) {
+          if ((val != null ? val.constructor : void 0) === Validator) {
+            return val.serialize();
+          } else {
+            return val;
+          }
+        });
+      });
+      return {
+        json: function() {
+          return JSON.stringify(this.serialize());
+        }
+      };
     };
     Validator.prototype.functions = {};
     return Validator;
@@ -93,7 +106,8 @@
   defineValidator = exports.defineValidator = function(name, f) {
     name = name.toLowerCase();
     Validator.prototype.functions[name] = f;
-    return Validator.prototype[name] = function() {
+    Validator.prototype.functions[helpers.capitalize(name)] = f;
+    return Validator.prototype[name] = Validator.prototype[helpers.capitalize(name)] = function() {
       var args;
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       if (!(this.validate != null)) {

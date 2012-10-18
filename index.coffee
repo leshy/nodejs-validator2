@@ -5,7 +5,7 @@ helpers = require 'helpers'
 exports.Validator = class Validator
   constructor: (@validate, @args=[], @child) ->
     if @validate?.constructor is Array then @args = @validate[1]; @child = @validate[2]; @validate = @validate[0]
-    if @args?.constructor is not Array then @args = [ @args ]
+    if @args?.constructor != Array then @args = [ @args ]
         
     switch @validate?.constructor
         when String then @validate = @functions[ @validate ]
@@ -19,14 +19,16 @@ exports.Validator = class Validator
   feed: (data,callback) -> if not @validate then @execChildren(data,callback) else @validate.apply(this, @args.concat([ data, (err,data) => if err then callback err,data else @execChildren(data,callback) ]))
   execChildren: (data,callback) -> if @child then @child.feed(data,callback) else callback undefined, data
   addChild: (child) -> if @child? then @child.addChild(child) else @child = child
-  serialize: -> [ @name(), @args, if @child then @child.serialize() ]
+  serialize: -> [ @name(), @serializeArgs(), if @child then @child.serialize() ]
+  serializeArgs: -> return _.map( @args, (arg) -> helpers.unimap arg, (val) -> if val?.constructor is Validator then val.serialize(); else val);
   json: -> JSON.stringify @serialize()
   functions: {} 
 
 defineValidator = exports.defineValidator = (name,f) ->
     name = name.toLowerCase()
     Validator.prototype.functions[name] = f
-    Validator.prototype[name] = (args...) ->
+    Validator.prototype.functions[helpers.capitalize(name)] = f
+    Validator.prototype[name] = Validator.prototype[helpers.capitalize(name)] = (args...) ->
         if not @validate? then @validate = f; @args = args; else @addChild new Validator(f,args) 
         this
 

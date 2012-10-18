@@ -111,5 +111,18 @@ exports.Serialize = (test) ->
     x = new v.Validator('default', 3).number()
     serialized = x.serialize()
     y = new v.Validator(serialized)
+    test.deepEqual serialized, [ 'default', [ 3 ], [ 'number', [], undefined ] ]
     test.deepEqual y.serialize(), serialized
     test.done()
+
+    
+exports.complexSerialize = (test) ->
+    x = new v.Validator().default({ bla: 3, bla2: "kkk"}).Children({ bla: 3, bla2: new v.Validator('default', 'bla').string()})
+    serialized = x.serialize()
+    y = new v.Validator(serialized)
+    test.deepEqual(y.serialize(),serialized)
+    #console.log("SERIALIZED:",JSON.stringify(serialized))
+    test.done()
+
+
+    
