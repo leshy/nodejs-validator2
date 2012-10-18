@@ -115,14 +115,17 @@ exports.Serialize = (test) ->
     test.deepEqual y.serialize(), serialized
     test.done()
 
-    
 exports.complexSerialize = (test) ->
     x = new v.Validator().default({ bla: 3, bla2: "kkk"}).Children({ bla: 3, bla2: new v.Validator('default', 'bla').string()})
     serialized = x.serialize()
     y = new v.Validator(serialized)
     test.deepEqual(y.serialize(),serialized)
-    #console.log("SERIALIZED:",JSON.stringify(serialized))
     test.done()
 
-
-    
+exports.not = (test) ->
+    x = new v.Validator().not(new v.Validator('string'))
+    cnt = 0
+    x.feed('bla', (err,data) -> if not err? then test.fail('string passed') else cnt++)
+    x.feed(3, (err,data) -> if err? then test.fail('number didnt pass') else cnt++)
+    test.equal(cnt,2)
+    test.done()

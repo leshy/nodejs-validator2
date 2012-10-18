@@ -46,5 +46,4 @@ defineValidator "children", (children,data,callback) ->
     async.parallel(helpers.hashmap( children, (validator, name) -> (callback) -> new Validator(validator).feed(data[name], callback)),
         (err,changeddata) -> if err? then callback(err) else callback undefined, _.extend(data,changeddata))
 
-
-
+defineValidator "not", (child,data,callback) -> child = new Validator(child); child.feed data, (err,data) -> if not err? then callback("validator #{ child.name() } passed and it shouldn't have") else callback(undefined,data)

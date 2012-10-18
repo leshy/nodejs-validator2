@@ -173,4 +173,14 @@
       }
     });
   });
+  defineValidator("not", function(child, data, callback) {
+    child = new Validator(child);
+    return child.feed(data, function(err, data) {
+      if (!(err != null)) {
+        return callback("validator " + (child.name()) + " passed and it shouldn't have");
+      } else {
+        return callback(void 0, data);
+      }
+    });
+  });
 }).call(this);
