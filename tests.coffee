@@ -92,7 +92,7 @@ exports.NoChild = (test) ->
     test.notEqual x.validate, undefined
     cnt = 0
     x.feed "blaasfasf", (err,data) -> if err? then test.fail() else cnt++
-    test.equals cnt 1
+    test.equals cnt, 1
     test.done()
 
 exports.ChildrenInit = (test) ->
