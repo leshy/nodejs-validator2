@@ -1,37 +1,25 @@
 (function() {
-  var Validator, async, construct, defineValidator, helpers, typevalidator, _;
+  var Validator, async, defineValidator, helpers, typevalidator, _;
   var __slice = Array.prototype.slice, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   _ = require('underscore');
   async = require('async');
   helpers = require('helpers');
-  construct = function(constructor, args) {
-    var F;
-    F = function() {
-      return constructor.apply(this, args);
-    };
-    F.prototype = constructor.prototype;
-    return new F();
-  };
   exports.Validator = Validator = (function() {
     function Validator() {
       var args, val, validate, _ref;
       validate = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       this.validate = validate;
       this.args = args;
-      if (this.args.constructor === !Array) {
-        this.args = [this.args];
-      }
       switch ((_ref = this.validate) != null ? _ref.constructor : void 0) {
         case String:
           this.validate = this.functions[this.validate];
           break;
         case Number:
-          val = this.validate;
+          this.args = [this.validate];
           this.validate = this.functions.is;
-          this.args = [val];
           break;
         case Object:
-          val = this.validate;
+          this.args = [this.validate];
           this.validate = this.functions.children;
           this.args = [val];
           break;

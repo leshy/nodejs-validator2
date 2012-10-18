@@ -2,19 +2,12 @@ _ = require 'underscore'
 async = require 'async'
 helpers = require 'helpers'
 
-
-construct = (constructor, args) -> 
-    F = -> constructor.apply(this, args)
-    F.prototype = constructor.prototype
-    new F()
-
 exports.Validator = class Validator
-  constructor: (@validate, @args...)  ->
-    if @args.constructor is not Array then @args = [ @args ]
+  constructor: (@validate, @args...) ->
     switch @validate?.constructor
         when String then @validate = @functions[@validate]
-        when Number then val = @validate; @validate = @functions.is; @args = [ val ]
-        when Object then val = @validate; @validate = @functions.children; @args = [ val ]
+        when Number then @args = [ @validate ]; @validate = @functions.is
+        when Object then @args = [ @validate ]; @validate = @functions.children; @args = [ val ]
         when Validator then val = @validate; @validate = val.validate; @args = val.args; if val.child then @child = val.child
 
   name: -> helpers.find(@functions, (f,name) => if f is @validate then return name else return false )
@@ -26,13 +19,9 @@ exports.Validator = class Validator
 
 defineValidator = exports.defineValidator = (name,f) ->
     name = name.toLowerCase()
-    
     Validator.prototype.functions[name] = f
     Validator.prototype[name] = (args...) ->
-        if not @validate? then @validate = f; @args = args; else 
-            v = new Validator(f)
-            v.args = args
-            @addChild v
+        if not @validate? then @validate = f; @args = args; else v = new Validator(f); v.args = args; @addChild v
         this
 
 _.map require('./validate.js').Validate, (lvf,name) -> defineValidator name, (args,target,callback) -> helpers.throwToCallback(lvf) target, _.first(args), (err,data) -> callback(err, target if not err?)
