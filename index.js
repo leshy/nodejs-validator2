@@ -1,7 +1,8 @@
 (function() {
-  var Validator, defineValidator, helpers, typevalidator, _;
+  var Validator, async, defineValidator, helpers, typevalidator, _;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   _ = require('underscore');
+  async = require('async');
   helpers = require('helpers');
   exports.Validator = Validator = (function() {
     function Validator(validate) {
@@ -10,6 +11,9 @@
       switch ((_ref = this.validate) != null ? _ref.constructor : void 0) {
         case String:
           this.validate = Validator.prototype[this.validate];
+          break;
+        case Number:
+          this.validate = Validator.is(this.validate);
       }
     }
     Validator.prototype.feed = function(data, callback) {
@@ -39,6 +43,7 @@
         return this.child = child;
       }
     };
+    defineValidator;
     return Validator;
   })();
   defineValidator = exports.defineValidator = function(name, f) {
@@ -95,5 +100,18 @@
     } else {
       return callback(void 0, defaultvalue);
     }
+  });
+  defineValidator("children", function(children, data, callback) {
+    return async.parallel(helpers.hashmap(children, function(validator, name) {
+      return function(callback) {
+        return validator.feed(data[name], callback);
+      };
+    }), function(err, changeddata) {
+      if (err != null) {
+        return callback(err);
+      } else {
+        return callback(void 0, _.extend(data, changeddata));
+      }
+    });
   });
 }).call(this);

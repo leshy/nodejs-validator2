@@ -21,7 +21,6 @@ exports.type = (test) ->
     test.equals cnt, 2
     test.done()
 
-
 exports.chain = (test) ->
     cnt = 0
     new v.Validator().default('lala').String().feed undefined,
@@ -31,3 +30,10 @@ exports.chain = (test) ->
             cnt++    
     
     if cnt != 1 then test.fail() else test.done()
+
+exports.children = (test) ->
+    cnt = 0
+    new v.Validator().children({ bla: new v.Validator().String(), kkk: new v.Validator().String() }).feed( { bla: 'lala', kkk:'string2' }, (err,data) -> if not err? then cnt++ else test.fail() )
+    new v.Validator().children({ bla: new v.Validator().String(), kkk: new v.Validator().String() }).feed( { bla: 'lala', kkk: 3 }, (err,data) -> if err? then cnt++ else test.fail() )
+    test.equals cnt, 2
+    test.done()
