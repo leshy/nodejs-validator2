@@ -101,4 +101,8 @@ exports.ChildrenInit = (test) ->
     x.feed( {bla: "prdac", a: [ 1, 3 ,4 ] }, (err,data) -> if not err? then cnt++ else test.fail())
     test.done()
 
+exports.Name = (test) ->
+    x = new v.Validator('string')
+    test.equals x.name(), 'string'
+    test.done()
     

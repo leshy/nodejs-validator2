@@ -27,11 +27,21 @@
         case Validator:
           val = this.validate;
           this.validate = val.validate;
+          this.name = val.name;
           if (val.child) {
             this.child = val.child;
           }
       }
     }
+    Validator.prototype.name = function() {
+      return helpers.find(this.functions, __bind(function(f, name) {
+        if (f === this.validate) {
+          return name;
+        } else {
+          return false;
+        }
+      }, this));
+    };
     Validator.prototype.feed = function(data, callback) {
       if (!this.validate) {
         return this.execChildren(data, callback);
@@ -59,7 +69,11 @@
         return this.child = child;
       }
     };
+    Validator.prototype.parse = function(str) {
+      return console.log(str);
+    };
     Validator.prototype.functions = {};
+    Validator.prototype.args = [];
     return Validator;
   })();
   defineValidator = exports.defineValidator = function(name, f) {

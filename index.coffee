@@ -8,12 +8,15 @@ exports.Validator = class Validator
         when String then @validate = @functions[@validate]
         when Number then val = @validate; @validate = (data,callback) -> @functions.is val, data, callback
         when Object then val = @validate; @validate = (data,callback) -> @functions.children val, data, callback
-        when Validator then val = @validate; @validate = val.validate; if val.child then @child = val.child
-        
+        when Validator then val = @validate; @validate = val.validate; @name = val.name; if val.child then @child = val.child
+
+  name: -> helpers.find(@functions, (f,name) => if f is @validate then return name else return false )
   feed: (data,callback) -> if not @validate then @execChildren(data,callback) else @validate data, (err,data) => if err then callback err,data else @execChildren(data,callback)
   execChildren: (data,callback) -> if @child then @child.feed(data,callback) else callback undefined, data
   addChild: (child) -> if @child? then @child.addChild(child) else @child = child
+  parse: (str) -> console.log str
   functions: {}
+  args: []
 
 defineValidator = exports.defineValidator = (name,f) ->
     name = name.toLowerCase()
@@ -34,6 +37,8 @@ defineValidator "is", (compare,data,callback) -> if data is compare then callbac
 defineValidator "default", (defaultvalue,data,callback) -> if data? then callback undefined,data else callback undefined,defaultvalue
 
 defineValidator "children", (children,data,callback) ->
-    async.parallel(
-        helpers.hashmap( children, (validator, name) -> (callback) -> new Validator(validator).feed(data[name], callback)),
+    async.parallel(helpers.hashmap( children, (validator, name) -> (callback) -> new Validator(validator).feed(data[name], callback)),
         (err,changeddata) -> if err? then callback(err) else callback undefined, _.extend(data,changeddata))
+
+
+
