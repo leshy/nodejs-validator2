@@ -106,4 +106,8 @@ exports.Name = (test) ->
     x = new v.Validator('string')
     test.equals x.name(), 'string'
     test.done()
-    
+
+exports.Serialize = (test) ->
+    x = new v.Validator('default', 3).string()
+    console.log(x.json())
+    test.done()

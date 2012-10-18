@@ -3,7 +3,7 @@ async = require 'async'
 helpers = require 'helpers'
 
 exports.Validator = class Validator
-  constructor: (@validate, @args...) ->
+  constructor: (@validate, @args) ->
     switch @validate?.constructor
         when String then @validate = @functions[@validate]
         when Number then @args = [ @validate ]; @validate = @functions.is
@@ -14,6 +14,8 @@ exports.Validator = class Validator
   feed: (data,callback) -> if not @validate then @execChildren(data,callback) else @validate.apply this, @args.concat( [ data, (err,data) => if err then callback err,data else @execChildren(data,callback) ] )
   execChildren: (data,callback) -> if @child then @child.feed(data,callback) else callback undefined, data
   addChild: (child) -> if @child? then @child.addChild(child) else @child = child
+  serialize: -> [ @name(), @args, if @child then @child.serialize() ]
+  json: -> JSON.stringify @serialize()
   parse: (str) -> console.log str
   functions: {} 
 

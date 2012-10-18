@@ -70,6 +70,12 @@
         return this.child = child;
       }
     };
+    Validator.prototype.serialize = function() {
+      return [this.name(), this.args, this.child ? this.child.serialize() : void 0];
+    };
+    Validator.prototype.json = function() {
+      return JSON.stringify(this.serialize());
+    };
     Validator.prototype.parse = function(str) {
       return console.log(str);
     };
