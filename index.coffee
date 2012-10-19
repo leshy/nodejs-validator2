@@ -6,7 +6,7 @@ exports.Validator = class Validator
   constructor: (@validate, @args=[], @child) ->
     if @validate?.constructor is Array then @args = @validate[1]; @child = @validate[2]; @validate = @validate[0]
     if @args?.constructor != Array then @args = [ @args ]
-        
+
     switch @validate?.constructor
         when String then @validate = @functions[ @validate ]
         when Number then @args = [ @validate ]; @validate = @functions.is
@@ -26,9 +26,9 @@ exports.Validator = class Validator
 
 defineValidator = exports.defineValidator = (name,f) ->
     name = name.toLowerCase()
-    Validator.prototype.functions[name] = f
-    Validator.prototype.functions[helpers.capitalize(name)] = f
-    Validator.prototype[name] = Validator.prototype[helpers.capitalize(name)] = (args...) ->
+    Validator::functions[name] = f
+    Validator::functions[helpers.capitalize(name)] = f
+    Validator::[name] = Validator::[helpers.capitalize(name)] = (args...) ->
         if not @validate? then @validate = f; @args = args; else @addChild new Validator(f,args) 
         this
 
@@ -47,3 +47,4 @@ defineValidator "children", (children,data,callback) ->
         (err,changeddata) -> if err? then callback(err) else callback undefined, _.extend(data,changeddata))
 
 defineValidator "not", (child,data,callback) -> child = new Validator(child); child.feed data, (err,data) -> if not err? then callback("validator #{ child.name() } passed and it shouldn't have") else callback(undefined,data)
+
