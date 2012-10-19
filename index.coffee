@@ -32,7 +32,7 @@ defineValidator = exports.defineValidator = (name,f) ->
         if not @validate? then @validate = f; @args = args; else @addChild new Validator(f,args) 
         this
 
-_.map require('./validate.js').Validate, (lvf,name) -> defineValidator name, (args,target,callback) -> helpers.throwToCallback(lvf) target, _.first(args), (err,data) -> callback(err, target if not err?)
+_.map require('./validate.js').Validate, (lvf,name) -> defineValidator name, (args,data,callback) -> helpers.throwToCallback(lvf) data, args, (err,data) -> callback(err, data if not err?)
 
 typevalidator = (type,target,callback) -> if type is target?.constructor then callback undefined, target else callback "wrong type '#{ target?.constructor.name }', expected '#{ type.name }'"
 
@@ -43,7 +43,7 @@ defineValidator "set", (setto,data,callback) -> callback undefined, setto
 
 defineValidator "is", (compare,data,callback) -> if data is compare then callback undefined, data else callback "wrong value, got #{ JSON.stringify(data) } (#{typeof data}) and expected #{ JSON.stringify(compare) } (#{typeof compare})"
 
-defineValidator "default", (defaultvalue,data,callback) -> if data? then callback undefined,data else callback undefined,defaultvalue
+defineValidator "default", (defaultvalue,data,callback) -> if data? then callback undefined,data else callback undefined, if defaultvalue.constructor is Function then defaultvalue() else defaultvalue
 
 defineValidator "children", (children,data,callback) ->
     async.parallel(helpers.hashmap( children, (validator, name) -> (callback) -> new Validator(validator).feed(data[name], callback)),

@@ -119,9 +119,9 @@
     };
   };
   _.map(require('./validate.js').Validate, function(lvf, name) {
-    return defineValidator(name, function(args, target, callback) {
-      return helpers.throwToCallback(lvf)(target, _.first(args), function(err, data) {
-        return callback(err, !(err != null) ? target : void 0);
+    return defineValidator(name, function(args, data, callback) {
+      return helpers.throwToCallback(lvf)(data, args, function(err, data) {
+        return callback(err, !(err != null) ? data : void 0);
       });
     });
   });
@@ -156,7 +156,7 @@
     if (data != null) {
       return callback(void 0, data);
     } else {
-      return callback(void 0, defaultvalue);
+      return callback(void 0, defaultvalue.constructor === Function ? defaultvalue() : defaultvalue);
     }
   });
   defineValidator("children", function(children, data, callback) {

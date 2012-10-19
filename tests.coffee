@@ -130,3 +130,12 @@ exports.not = (test) ->
     x.feed(3, (err,data) -> if err? then test.fail('number didnt pass') else cnt++)
     test.equal(cnt,2)
     test.done()
+
+
+exports.livevalidation = (test) ->
+    x = new v.Validator().Default(6666666).Length({maximum: 20, minimum: 5})
+    cnt = 0
+    x.feed undefined,(err,data) -> if not err? then cnt++ else test.fail("a valid thing failed")
+    x.feed 3,(err,data) -> if err? then cnt++ else test.fail("an invalid thing passed")
+    test.equal(cnt,2)
+    test.done()
