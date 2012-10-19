@@ -195,6 +195,24 @@
       }
     });
   });
+  defineValidator("or", function() {
+    var callback, data, next, validators, _i;
+    validators = 3 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 2) : (_i = 0, []), data = arguments[_i++], callback = arguments[_i++];
+    next = function() {
+      if (!validators.length) {
+        return callback('none of the validator passed');
+      } else {
+        return (new Validator(validators.pop())).feed(data, function(err, data) {
+          if (!(err != null)) {
+            return callback(void 0, data);
+          } else {
+            return next();
+          }
+        });
+      }
+    };
+    return next();
+  });
   defineValidator("not", function(child, data, callback) {
     child = new Validator(child);
     return child.feed(data, function(err, data) {

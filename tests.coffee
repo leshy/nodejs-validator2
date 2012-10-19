@@ -163,3 +163,13 @@ exports.defaultfun = (test) ->
     x.feed undefined,(err,data) -> test.equals "BLA", data
     test.done()
 
+
+exports.or = (test) ->
+    x = new v.Validator().or( 'string', 'object' )
+    cnt = 0
+    x.feed 'bla',(err,data) -> if err? then test.fail() else cnt++
+    x.feed { bla: 3 },(err,data) -> if err? then test.fail() else cnt++
+    x.feed true ,(err,data) -> if not err? then test.fail() else cnt++
+    test.equals cnt, 3
+    test.done()
+

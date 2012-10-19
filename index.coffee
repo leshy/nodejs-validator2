@@ -24,7 +24,7 @@ exports.Validator = class Validator
   serialize: -> [ @name(), @serializeArgs(), if @child then @child.serialize() ]
   serializeArgs: -> return _.map( @args, (arg) -> helpers.unimap arg, (val) -> if val?.constructor is Validator then val.serialize(); else val);
   json: -> JSON.stringify @serialize()
-  functions: {} 
+  functions: {}
 
 defineValidator = exports.defineValidator = (name,f) ->
     name = name.toLowerCase()
@@ -54,6 +54,10 @@ defineValidator "instance", (data,callback) -> if typeof data is 'object' and da
 defineValidator "children", (children,data,callback) ->
     async.parallel(helpers.hashmap( children, (validator, name) -> (callback) -> new Validator(validator).feed(data[name], callback)),
         (err,changeddata) -> if err? then callback(err) else callback undefined, _.extend(data,changeddata))
+
+defineValidator "or", (validators...,data,callback) ->
+    next = -> if not validators.length then callback('none of the validator passed') else (new Validator(validators.pop())).feed( data, (err,data) -> if not err? then callback(undefined,data) else next())
+    next()
 
 defineValidator "not", (child,data,callback) -> child = new Validator(child); child.feed data, (err,data) -> if not err? then callback("validator #{ child.name() } passed and it shouldn't have") else callback(undefined,data)
 
