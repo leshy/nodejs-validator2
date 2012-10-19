@@ -10,7 +10,7 @@ exports.Validator = class Validator
     switch @validate?.constructor
         when String then @validate = @functions[ @validate ]
         when Number then @args = [ @validate ]; @validate = @functions.is
-        when Object then @args = [ @validate ]; @validate = @functions.children; @args = [ val ]
+        when Object then @args = [ @validate ]; @validate = @functions.children
         when Validator then val = @validate; @validate = val.validate; @args = val.args; if val.child then @child = val.child
 
     if @child?.constructor is Array then @child = new Validator(@child)
@@ -35,11 +35,14 @@ defineValidator = exports.defineValidator = (name,f) ->
 _.map require('./validate.js').Validate, (lvf,name) -> defineValidator name, (args,target,callback) -> helpers.throwToCallback(lvf) target, _.first(args), (err,data) -> callback(err, target if not err?)
 
 typevalidator = (type,target,callback) -> if type is target?.constructor then callback undefined, target else callback "wrong type '#{ target?.constructor.name }', expected '#{ type.name }'"
+
 defineValidator "type", (args,data,callback) -> typevalidator _.first(args), data, callback
 _.map [ String, Number, Boolean, Function, Array ], (type) -> defineValidator type.name, (args...,data,callback) -> typevalidator type, data, callback
 
 defineValidator "set", (setto,data,callback) -> callback undefined, setto
+
 defineValidator "is", (compare,data,callback) -> if data is compare then callback undefined, data else callback "wrong value, got #{ JSON.stringify(data) } (#{typeof data}) and expected #{ JSON.stringify(compare) } (#{typeof compare})"
+
 defineValidator "default", (defaultvalue,data,callback) -> if data? then callback undefined,data else callback undefined,defaultvalue
 
 defineValidator "children", (children,data,callback) ->

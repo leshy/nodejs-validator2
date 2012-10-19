@@ -100,6 +100,7 @@ exports.ChildrenInit = (test) ->
     cnt = 0
     x = new v.Validator({bla : "string", a: "array"})
     x.feed( {bla: "prdac", a: [ 1, 3 ,4 ] }, (err,data) -> if not err? then cnt++ else test.fail())
+    x.feed( {bla: "prdac", a: 3 }, (err,data) -> if err? then cnt++ else test.fail('I should have failed'))
     test.done()
 
 exports.Name = (test) ->

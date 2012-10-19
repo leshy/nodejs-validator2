@@ -29,7 +29,6 @@
         case Object:
           this.args = [this.validate];
           this.validate = this.functions.children;
-          this.args = [val];
           break;
         case Validator:
           val = this.validate;
