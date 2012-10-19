@@ -37,6 +37,10 @@
           if (val.child) {
             this.child = val.child;
           }
+          break;
+        case Boolean:
+          this.validate = this.functions.exists;
+          this.args = [];
       }
       if (((_ref4 = this.child) != null ? _ref4.constructor : void 0) === Array) {
         this.child = new Validator(this.child);
@@ -157,6 +161,13 @@
       return callback(void 0, data);
     } else {
       return callback(void 0, defaultvalue.constructor === Function ? defaultvalue() : defaultvalue);
+    }
+  });
+  defineValidator("exists", function(data, callback) {
+    if (data != null) {
+      return callback(void 0, data);
+    } else {
+      return callback("data doesn't exist");
     }
   });
   defineValidator("children", function(children, data, callback) {

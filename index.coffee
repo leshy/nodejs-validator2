@@ -12,7 +12,7 @@ exports.Validator = class Validator
         when Number then @args = [ @validate ]; @validate = @functions.is
         when Object then @args = [ @validate ]; @validate = @functions.children
         when Validator then val = @validate; @validate = val.validate; @args = val.args; if val.child then @child = val.child
-
+        when Boolean then @validate = @functions.exists; @args = []
     if @child?.constructor is Array then @child = new Validator(@child)
         
   name: -> helpers.find(@functions, (f,name) => if f is @validate then return name else return false )
@@ -44,6 +44,8 @@ defineValidator "set", (setto,data,callback) -> callback undefined, setto
 defineValidator "is", (compare,data,callback) -> if data is compare then callback undefined, data else callback "wrong value, got #{ JSON.stringify(data) } (#{typeof data}) and expected #{ JSON.stringify(compare) } (#{typeof compare})"
 
 defineValidator "default", (defaultvalue,data,callback) -> if data? then callback undefined,data else callback undefined, if defaultvalue.constructor is Function then defaultvalue() else defaultvalue
+
+defineValidator "exists", (data,callback) -> if data? then callback undefined,data else callback "data doesn't exist"
 
 defineValidator "children", (children,data,callback) ->
     async.parallel(helpers.hashmap( children, (validator, name) -> (callback) -> new Validator(validator).feed(data[name], callback)),

@@ -139,3 +139,20 @@ exports.livevalidation = (test) ->
     x.feed 3,(err,data) -> if err? then cnt++ else test.fail("an invalid thing passed")
     test.equal(cnt,2)
     test.done()
+
+
+exports.exists = (test) ->
+    x = new v.Validator().Exists()
+    cnt = 0
+    x.feed 3,(err,data) -> if not err? then cnt++ else test.fail("a valid thing failed")
+    x.feed undefined,(err,data) -> if err? then cnt++ else test.fail("an invalid thing passed")
+    test.equal(cnt,2)
+    test.done()
+
+exports.existsShortcut = (test) ->
+    x = new v.Validator(true)
+    cnt = 0
+    x.feed 3,(err,data) -> if not err? then cnt++ else test.fail("a valid thing failed")
+    x.feed undefined,(err,data) -> if err? then cnt++ else test.fail("an invalid thing passed")
+    test.equal(cnt,2)
+    test.done()
