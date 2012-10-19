@@ -2,6 +2,8 @@ _ = require 'underscore'
 async = require 'async'
 helpers = require 'helpers'
 
+exports.v = (args...) -> new exports.Validator(args)
+
 exports.Validator = class Validator
   constructor: (@validate, @args=[], @child) ->
     if @validate?.constructor is Array then @args = @validate[1]; @child = @validate[2]; @validate = @validate[0]
@@ -37,7 +39,7 @@ _.map require('./validate.js').Validate, (lvf,name) -> defineValidator name, (ar
 typevalidator = (type,target,callback) -> if type is target?.constructor then callback undefined, target else callback "wrong type '#{ target?.constructor.name }', expected '#{ type.name }'"
 
 defineValidator "type", (args,data,callback) -> typevalidator _.first(args), data, callback
-_.map [ String, Number, Boolean, Function, Array ], (type) -> defineValidator type.name, (args...,data,callback) -> typevalidator type, data, callback
+_.map [ Object, String, Number, Boolean, Function, Array ], (type) -> defineValidator type.name, (args...,data,callback) -> typevalidator type, data, callback
 
 defineValidator "set", (setto,data,callback) -> callback undefined, setto
 
@@ -46,6 +48,8 @@ defineValidator "is", (compare,data,callback) -> if data is compare then callbac
 defineValidator "default", (defaultvalue,data,callback) -> if data? then callback undefined,data else callback undefined, if defaultvalue.constructor is Function then defaultvalue() else defaultvalue
 
 defineValidator "exists", (data,callback) -> if data? then callback undefined,data else callback "data doesn't exist"
+
+defineValidator "instance", (data,callback) -> if typeof data is 'object' and data.constructor != Object then callback undefined, data else callback "#{ data } (#{typeof data}) is not an instance"
 
 defineValidator "children", (children,data,callback) ->
     async.parallel(helpers.hashmap( children, (validator, name) -> (callback) -> new Validator(validator).feed(data[name], callback)),

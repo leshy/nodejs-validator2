@@ -1,9 +1,14 @@
 (function() {
   var Validator, async, defineValidator, helpers, typevalidator, _;
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
+  var __slice = Array.prototype.slice, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   _ = require('underscore');
   async = require('async');
   helpers = require('helpers');
+  exports.v = function() {
+    var args;
+    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    return new exports.Validator(args);
+  };
   exports.Validator = Validator = (function() {
     function Validator(validate, args, child) {
       var val, _ref, _ref2, _ref3, _ref4;
@@ -139,7 +144,7 @@
   defineValidator("type", function(args, data, callback) {
     return typevalidator(_.first(args), data, callback);
   });
-  _.map([String, Number, Boolean, Function, Array], function(type) {
+  _.map([Object, String, Number, Boolean, Function, Array], function(type) {
     return defineValidator(type.name, function() {
       var args, callback, data, _i;
       args = 3 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 2) : (_i = 0, []), data = arguments[_i++], callback = arguments[_i++];
@@ -168,6 +173,13 @@
       return callback(void 0, data);
     } else {
       return callback("data doesn't exist");
+    }
+  });
+  defineValidator("instance", function(data, callback) {
+    if (typeof data === 'object' && data.constructor !== Object) {
+      return callback(void 0, data);
+    } else {
+      return callback("" + data + " (" + (typeof data) + ") is not an instance");
     }
   });
   defineValidator("children", function(children, data, callback) {
