@@ -156,3 +156,10 @@ exports.existsShortcut = (test) ->
     x.feed undefined,(err,data) -> if err? then cnt++ else test.fail("an invalid thing passed")
     test.equal(cnt,2)
     test.done()
+
+
+exports.defaultfun = (test) ->
+    x = new v.Validator().Default( -> "BLA").Length({maximum: 10, minimum: 2})
+    x.feed undefined,(err,data) -> test.equals "BLA", data
+    test.done()
+
