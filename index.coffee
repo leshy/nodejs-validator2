@@ -8,9 +8,10 @@ exports.Validator = class Validator
   constructor: (@validate, @args=[], @child) ->
     if @validate?.constructor is Array then @args = @validate[1]; @child = @validate[2]; @validate = @validate[0]
     if @args?.constructor != Array then @args = [ @args ]
-
+    
     switch @validate?.constructor
-        when String then @validate = @functions[ @validate ]
+        when String
+            if tmp = @functions[ @validate ] then @validate = tmp else @args = [ @validate ]; @validate = @functions.is
         when Number then @args = [ @validate ]; @validate = @functions.is
         when Object then @args = [ @validate ]; @validate = @functions.children
         when Validator then val = @validate; @validate = val.validate; @args = val.args; if val.child then @child = val.child
@@ -61,3 +62,6 @@ defineValidator "or", (validators...,data,callback) ->
 
 defineValidator "not", (child,data,callback) -> child = new Validator(child); child.feed data, (err,data) -> if not err? then callback("validator #{ child.name() } passed and it shouldn't have") else callback(undefined,data)
 
+defineValidator "regex", (regex,data,callback) ->
+    match = regex.exec(data)
+    if match then callback undefined, match else callback "regex failed"

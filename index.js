@@ -11,7 +11,7 @@
   };
   exports.Validator = Validator = (function() {
     function Validator(validate, args, child) {
-      var val, _ref, _ref2, _ref3, _ref4;
+      var tmp, val, _ref, _ref2, _ref3, _ref4;
       this.validate = validate;
       this.args = args != null ? args : [];
       this.child = child;
@@ -25,7 +25,12 @@
       }
       switch ((_ref3 = this.validate) != null ? _ref3.constructor : void 0) {
         case String:
-          this.validate = this.functions[this.validate];
+          if (tmp = this.functions[this.validate]) {
+            this.validate = tmp;
+          } else {
+            this.args = [this.validate];
+            this.validate = this.functions.is;
+          }
           break;
         case Number:
           this.args = [this.validate];
@@ -222,5 +227,14 @@
         return callback(void 0, data);
       }
     });
+  });
+  defineValidator("regex", function(regex, data, callback) {
+    var match;
+    match = regex.exec(data);
+    if (match) {
+      return callback(void 0, match);
+    } else {
+      return callback("regex failed");
+    }
   });
 }).call(this);
