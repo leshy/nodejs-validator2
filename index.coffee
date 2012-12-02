@@ -53,6 +53,7 @@ defineValidator "exists", (data,callback) -> if data? then callback undefined,da
 defineValidator "instance", (data,callback) -> if typeof data is 'object' and data.constructor != Object then callback undefined, data else callback "#{ data } (#{typeof data}) is not an instance"
 
 defineValidator "children", (children,data,callback) ->
+    if not data then callback("I didn't get a dict")
     async.parallel(helpers.hashmap( children, (validator, name) -> (callback) -> new Validator(validator).feed(data[name], callback)),
         (err,changeddata) -> if err? then callback(err) else callback undefined, _.extend(data,changeddata))
 

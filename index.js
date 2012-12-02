@@ -188,6 +188,9 @@
     }
   });
   defineValidator("children", function(children, data, callback) {
+    if (!data) {
+      callback("I didn't get a dict");
+    }
     return async.parallel(helpers.hashmap(children, function(validator, name) {
       return function(callback) {
         return new Validator(validator).feed(data[name], callback);
