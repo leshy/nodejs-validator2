@@ -190,6 +190,7 @@
   defineValidator("children", function(children, data, callback) {
     if (!data) {
       callback("I didn't get a dict");
+      return;
     }
     return async.parallel(helpers.hashmap(children, function(validator, name) {
       return function(callback) {
