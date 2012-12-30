@@ -39,6 +39,15 @@ exports.is = (test) ->
     test.done()
 
 
+exports.StringIsShortcut = (test) ->
+    cnt = 0
+    new v.Validator("bla").feed "bla", (err,data) -> if err? then test.fail err else cnt++
+    new v.Validator("bla").feed "blax", (err,data) -> if not err? then test.fail "didn't fail on wrong string" else cnt++
+    test.equals cnt, 2
+    test.done()
+
+
+
 exports.chain = (test) ->
     cnt = 0
     new v.Validator().default('lala').string().feed undefined,

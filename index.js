@@ -11,7 +11,7 @@
   };
   exports.Validator = Validator = (function() {
     function Validator(validate, args, child) {
-      var tmp, val, _ref, _ref2, _ref3, _ref4;
+      var f, val, _ref, _ref2, _ref3, _ref4;
       this.validate = validate;
       this.args = args != null ? args : [];
       this.child = child;
@@ -25,8 +25,8 @@
       }
       switch ((_ref3 = this.validate) != null ? _ref3.constructor : void 0) {
         case String:
-          if (tmp = this.functions[this.validate]) {
-            this.validate = tmp;
+          if (f = this.functions[this.validate]) {
+            this.validate = f;
           } else {
             this.args = [this.validate];
             this.validate = this.functions.is;
@@ -189,7 +189,7 @@
   });
   defineValidator("children", function(children, data, callback) {
     if (!data) {
-      callback("I didn't get a dict");
+      callback('undefined');
       return;
     }
     return async.parallel(helpers.hashmap(children, function(validator, name) {
@@ -231,14 +231,5 @@
         return callback(void 0, data);
       }
     });
-  });
-  defineValidator("regex", function(regex, data, callback) {
-    var match;
-    match = regex.exec(data);
-    if (match) {
-      return callback(void 0, match);
-    } else {
-      return callback("regex failed");
-    }
   });
 }).call(this);
