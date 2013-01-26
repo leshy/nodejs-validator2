@@ -45,7 +45,7 @@ _.map [ Object, String, Number, Boolean, Function, Array ], (type) -> defineVali
 
 defineValidator "set", (setto,data,callback) -> callback undefined, setto
 
-defineValidator "is", (compare,data,callback) -> if data is compare then callback undefined, data else callback "wrong value, got #{ JSON.stringify(data) } (#{typeof data}) and expected #{ JSON.stringify(compare) } (#{typeof compare})"
+defineValidator "is", (compare,data,callback) -> if data is compare then callback undefined, data else callback "wrong value, got #{ data } (#{typeof data}) and expected #{ JSON.stringify(compare) } (#{typeof compare})"
 
 defineValidator "default", (defaultvalue,data,callback) -> if data? then callback undefined,data else callback undefined, if defaultvalue.constructor is Function then defaultvalue() else defaultvalue
 

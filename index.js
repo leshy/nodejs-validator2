@@ -163,7 +163,7 @@
     if (data === compare) {
       return callback(void 0, data);
     } else {
-      return callback("wrong value, got " + (JSON.stringify(data)) + " (" + (typeof data) + ") and expected " + (JSON.stringify(compare)) + " (" + (typeof compare) + ")");
+      return callback("wrong value, got " + data + " (" + (typeof data) + ") and expected " + (JSON.stringify(compare)) + " (" + (typeof compare) + ")");
     }
   });
   defineValidator("default", function(defaultvalue, data, callback) {
