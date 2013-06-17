@@ -23,7 +23,7 @@ exports.Validator = class Validator
   feed: (data,callback) -> if not @validate then @execChildren(data,callback) else @validate.apply(this, @args.concat([ data, (err,data) => if err then callback err,data else @execChildren(data,callback) ]))
   execChildren: (data,callback) -> if @child then @child.feed(data,callback) else callback undefined, data
   addChild: (child) -> if @child? then @child.addChild(child) else @child = child
-  serialize: -> [ @name(), @serializeArgs(), if @child then @child.serialize() ]
+  serialize: -> if @child then [ @name(), @serializeArgs(), @child.serialize() ] else [ @name(), @serializeArgs() ]
   serializeArgs: -> return _.map( @args, (arg) -> helpers.unimap arg, (val) -> if val?.constructor is Validator then val.serialize(); else val);
   json: -> JSON.stringify @serialize()
   functions: {}

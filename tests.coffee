@@ -121,7 +121,7 @@ exports.Serialize = (test) ->
     x = new v.Validator('default', 3).number()
     serialized = x.serialize()
     y = new v.Validator(serialized)
-    test.deepEqual serialized, [ 'default', [ 3 ], [ 'number', [], undefined ] ]
+    test.deepEqual serialized, [ 'default', [ 3 ], [ 'number', [] ] ]
     test.deepEqual y.serialize(), serialized
     test.done()
 
