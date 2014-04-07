@@ -224,7 +224,7 @@
       callback('undefined');
       return;
     }
-    return async.parallel(helpers.hashmap(children, function(validator, name) {
+    return async.parallel(helpers.dictMap(children, function(validator, name) {
       return function(callback) {
         return new Validator(validator).feed(data[name], callback);
       };
