@@ -28,7 +28,7 @@ exports.Validator = class Validator
   json: -> JSON.stringify @serialize()
   functions: {}
 
-defineValidator = exports.defineValidator = (name,f) ->
+defineValidator = exports.defineValidator = (name="",f) ->
     name = name.toLowerCase()
     Validator::functions[name] = f
     Validator::functions[helpers.capitalize(name)] = f

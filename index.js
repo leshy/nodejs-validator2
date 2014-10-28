@@ -139,6 +139,9 @@
   })();
 
   defineValidator = exports.defineValidator = function(name, f) {
+    if (name == null) {
+      name = "";
+    }
     name = name.toLowerCase();
     Validator.prototype.functions[name] = f;
     Validator.prototype.functions[helpers.capitalize(name)] = f;
