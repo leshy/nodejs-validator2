@@ -31,7 +31,7 @@ exports.Validator = class Validator
   json: -> JSON.stringify @serialize()
   functions: {}
 
-defineValidator = exports.defineValidator = (name,f) ->
+defineValidator = exports.defineValidator = (name="",f) ->
     name = name.toLowerCase()
     Validator::functions[name] = f
     Validator::functions[helpers.capitalize(name)] = f
@@ -61,7 +61,7 @@ defineValidator "instance", (data,callback) -> if typeof data is 'object' and da
 defineValidator "children", (children,data,callback) ->
     #console.log("children".red, children,"data".red, data,"callback".red,callback)
     if not data then callback('undefined'); return
-    async.parallel(helpers.hashmap( children, (validator, name) -> (callback) -> new Validator(validator).feed(data[name], callback)),
+    async.parallel(helpers.dictMap( children, (validator, name) -> (callback) -> new Validator(validator).feed(data[name], callback)),
         (err,changeddata) -> if err? then callback(err) else callback undefined, _.extend(data,changeddata))
 
 defineValidator "or", (validators...,data,callback) ->

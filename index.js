@@ -149,6 +149,9 @@
   })();
 
   defineValidator = exports.defineValidator = function(name, f) {
+    if (name == null) {
+      name = "";
+    }
     name = name.toLowerCase();
     Validator.prototype.functions[name] = f;
     Validator.prototype.functions[helpers.capitalize(name)] = f;
@@ -236,7 +239,7 @@
       callback('undefined');
       return;
     }
-    return async.parallel(helpers.hashmap(children, function(validator, name) {
+    return async.parallel(helpers.dictMap(children, function(validator, name) {
       return function(callback) {
         return new Validator(validator).feed(data[name], callback);
       };
