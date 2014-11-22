@@ -1,3 +1,5 @@
+# I'd like a blocking mode to exist, with limited subset of blocking-able validators
+# (for module init validation, module accessors, and such simple local stuff [ look at validator2-extras ])
 _ = require 'underscore'
 async = require 'async'
 helpers = require 'helpers'
@@ -8,7 +10,7 @@ exports.Validator = class Validator
   constructor: (@validate, @args=[], @child) ->
     if @validate?.constructor is Array then @args = @validate[1]; @child = @validate[2]; @validate = @validate[0] # parsing of serialized validator
     if @args?.constructor != Array then @args = [ @args ]
-        
+    
     switch @validate?.constructor
         when Function then if typeValidatorMatch = _.find(validableTypes, (t) => t == @validate) then @validate = @functions[@validate.name] # can receive a type constructor, will type validate
         when String
