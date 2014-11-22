@@ -83,7 +83,6 @@ exports.stringInit = (test) ->
     x.feed(3,(err,data) -> if err? then cnt++ else test.fail('didnt fail'))
     test.equals cnt, 2
     test.done()
-
     
 exports.isNumInit = (test) ->
     x = new v.Validator(3)
@@ -140,7 +139,6 @@ exports.not = (test) ->
     test.equal(cnt,2)
     test.done()
 
-
 exports.livevalidation = (test) ->
     x = new v.Validator().Default(6666666).Length({maximum: 20, minimum: 5})
     cnt = 0
@@ -148,7 +146,6 @@ exports.livevalidation = (test) ->
     x.feed 3,(err,data) -> if err? then cnt++ else test.fail("an invalid thing passed")
     test.equal(cnt,2)
     test.done()
-
 
 exports.exists = (test) ->
     x = new v.Validator().Exists()
@@ -166,12 +163,10 @@ exports.existsShortcut = (test) ->
     test.equal(cnt,2)
     test.done()
 
-
 exports.defaultfun = (test) ->
     x = new v.Validator().Default( -> "BLA").Length({maximum: 10, minimum: 2})
     x.feed undefined,(err,data) -> test.equals "BLA", data
     test.done()
-
 
 exports.or = (test) ->
     x = new v.Validator().or( 'string', 'object' )
@@ -180,5 +175,14 @@ exports.or = (test) ->
     x.feed { bla: 3 },(err,data) -> if err? then test.fail() else cnt++
     x.feed true ,(err,data) -> if not err? then test.fail() else cnt++
     test.equals cnt, 3
+    test.done()
+
+exports.typeShortcut = (test) ->
+    x = new v.Validator(Object)
+    cnt = 0
+    x.feed 'bla',(err,data) -> cnt++; if not err? then test.fail("matched string")
+    x.feed { bla: 3 },(err,data) -> cnt++; if err? then test.fail("didnt match object")
+    x.feed 55 ,(err,data) -> cnt++; if not err? then test.fail("matched number")
+    test.equals cnt, 3, "cnt isnt 3"
     test.done()
 

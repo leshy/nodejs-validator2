@@ -10,6 +10,7 @@ exports.Validator = class Validator
     if @args?.constructor != Array then @args = [ @args ]
 
     switch @validate?.constructor
+        when Function then if typeValidatorMatch = _.find(validableTypes, (t) => t == @validate) then @validate = @functions[@validate.name] # can receive a type constructor, will type validate
         when String
             if f = @functions[ @validate ] then @validate = f
             else @args = [ @validate ]; @validate = @functions.is
@@ -17,6 +18,8 @@ exports.Validator = class Validator
         when Object then @args = [ @validate ]; @validate = @functions.children
         when Validator then val = @validate; @validate = val.validate; @args = val.args; if val.child then @child = val.child
         when Boolean then @validate = @functions.exists; @args = []
+
+
     if @child?.constructor is Array then @child = new Validator(@child)
         
   name: -> helpers.find(@functions, (f,name) => if f is @validate then return name else return false )
@@ -41,7 +44,9 @@ _.map require('./validate.js').Validate, (lvf,name) -> defineValidator name, (ar
 typevalidator = (type,target,callback) -> if type is target?.constructor then callback undefined, target else callback "wrong type '#{ target?.constructor.name }', expected '#{ type.name }'"
 
 defineValidator "type", (args,data,callback) -> typevalidator _.first(args), data, callback
-_.map [ Object, String, Number, Boolean, Function, Array ], (type) -> defineValidator type.name, (args...,data,callback) -> typevalidator type, data, callback
+
+validableTypes = [ Object, String, Number, Boolean, Function, Array ]
+_.map validableTypes, (type) -> defineValidator type.name, (args...,data,callback) -> typevalidator type, data, callback
 
 defineValidator "set", (setto,data,callback) -> callback undefined, setto
 
