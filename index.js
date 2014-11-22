@@ -149,8 +149,8 @@
   })();
 
   defineValidator = exports.defineValidator = function(name, f) {
-    if (name == null) {
-      name = "";
+    if (!name) {
+      throw "defineValidator didn't get a name";
     }
     name = name.toLowerCase();
     Validator.prototype.functions[name] = f;
