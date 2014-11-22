@@ -178,7 +178,7 @@ exports.or = (test) ->
     test.done()
 
 exports.typeShortcut = (test) ->
-    x = new v.Validator(Object)
+    x = new v.Validator(Object).Children({ bla: Number })
     cnt = 0
     x.feed 'bla',(err,data) -> cnt++; if not err? then test.fail("matched string")
     x.feed { bla: 3 },(err,data) -> cnt++; if err? then test.fail("didnt match object")

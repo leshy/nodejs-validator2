@@ -456,7 +456,9 @@
 
   exports.typeShortcut = function(test) {
     var cnt, x;
-    x = new v.Validator(Object);
+    x = new v.Validator(Object).Children({
+      bla: Number
+    });
     cnt = 0;
     x.feed('bla', function(err, data) {
       cnt++;

@@ -6,9 +6,9 @@ exports.v = (args...) -> new exports.Validator(args)
 
 exports.Validator = class Validator
   constructor: (@validate, @args=[], @child) ->
-    if @validate?.constructor is Array then @args = @validate[1]; @child = @validate[2]; @validate = @validate[0]
+    if @validate?.constructor is Array then @args = @validate[1]; @child = @validate[2]; @validate = @validate[0] # parsing of serialized validator
     if @args?.constructor != Array then @args = [ @args ]
-
+        
     switch @validate?.constructor
         when Function then if typeValidatorMatch = _.find(validableTypes, (t) => t == @validate) then @validate = @functions[@validate.name] # can receive a type constructor, will type validate
         when String
@@ -18,8 +18,6 @@ exports.Validator = class Validator
         when Object then @args = [ @validate ]; @validate = @functions.children
         when Validator then val = @validate; @validate = val.validate; @args = val.args; if val.child then @child = val.child
         when Boolean then @validate = @functions.exists; @args = []
-
-
     if @child?.constructor is Array then @child = new Validator(@child)
         
   name: -> helpers.find(@functions, (f,name) => if f is @validate then return name else return false )
