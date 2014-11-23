@@ -19,5 +19,5 @@
   "dist": {
     "shasum": "ba0ea9faf1b253ca661a684194de5a6d4e991c2a"
   },
-  "_from": "validator@git://github.com/leshy/nodejs-validator.git"
+  "repository" : { "type" : "git", "url" : "git://github.com/leshy/nodejs-validator2.git" }
 }
