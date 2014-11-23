@@ -12,7 +12,7 @@
   exports.v = function() {
     var args;
     args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    return new exports.Validator(args);
+    return new Validator(args);
   };
 
   exports.Validator = Validator = (function() {
