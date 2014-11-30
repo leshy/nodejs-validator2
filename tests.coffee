@@ -106,7 +106,7 @@ exports.NoChild = (test) ->
 
 exports.ChildrenInit = (test) ->
     cnt = 0
-    x = new v.Validator({bla : "string", a: "array"})
+    x = new v.Validator({bla : "string", a: Array})
     x.feed( {bla: "prdac", a: [ 1, 3 ,4 ] }, (err,data) -> if not err? then cnt++ else test.fail())
     x.feed( {bla: "prdac", a: 3 }, (err,data) -> if err? then cnt++ else test.fail('I should have failed'))
     test.done()
@@ -186,3 +186,20 @@ exports.typeShortcut = (test) ->
     test.equals cnt, 3, "cnt isnt 3"
     test.done()
 
+exports.array = (test) ->
+    x = new v.v().Array([ 'bla', String, Number, v.v().Default(8) ])
+    x.feed [ 'bla', 'blu', 3 ], (err,data) ->
+        
+        test.equals err, undefined
+        test.deepEqual data, [ 'bla', 'blu', 3, 8 ]
+        test.done()
+
+exports.emptyArray = (test) ->
+    x = new v.v().Array([])
+
+    x.feed [ 'bla' ], (err,data) ->
+        test.ok err
+        x.feed [], (err,data) ->
+            test.ok not err
+            test.deepEqual data, []
+            test.done()

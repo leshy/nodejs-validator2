@@ -261,7 +261,7 @@
     cnt = 0;
     x = new v.Validator({
       bla: "string",
-      a: "array"
+      a: Array
     });
     x.feed({
       bla: "prdac",
@@ -482,6 +482,29 @@
     });
     test.equals(cnt, 3, "cnt isnt 3");
     return test.done();
+  };
+
+  exports.array = function(test) {
+    var x;
+    x = new v.v().Array(['bla', String, Number, v.v().Default(8)]);
+    return x.feed(['bla', 'blu', 3], function(err, data) {
+      test.equals(err, void 0);
+      test.deepEqual(data, ['bla', 'blu', 3, 8]);
+      return test.done();
+    });
+  };
+
+  exports.emptyArray = function(test) {
+    var x;
+    x = new v.v().Array([]);
+    return x.feed(['bla'], function(err, data) {
+      test.ok(err);
+      return x.feed([], function(err, data) {
+        test.ok(!err);
+        test.deepEqual(data, []);
+        return test.done();
+      });
+    });
   };
 
 }).call(this);

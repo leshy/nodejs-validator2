@@ -42,12 +42,12 @@ defineValidator = exports.defineValidator = (name,f) ->
 
 _.map require('./validate.js').Validate, (lvf,name) -> defineValidator name, (args,data,callback) -> helpers.throwToCallback(lvf) data, args, (err) -> callback(err, data if not err?)
 
-typevalidator = (type,target,callback) -> if type is target?.constructor then callback undefined, target else callback "wrong type '#{ target?.constructor.name }', expected '#{ type.name }'"
+typeValidator = (type,target,callback) -> if type is target?.constructor then callback undefined, target else callback "wrong type '#{ target?.constructor.name }', expected '#{ type.name }'"
 
-defineValidator "type", (args,data,callback) -> typevalidator _.first(args), data, callback
+defineValidator "type", (args,data,callback) -> typeValidator _.first(args), data, callback
 
 validableTypes = [ Object, String, Number, Boolean, Function, Array ]
-_.map validableTypes, (type) -> defineValidator type.name, (args...,data,callback) -> typevalidator type, data, callback
+_.map validableTypes, (type) -> defineValidator type.name, (args...,data,callback) -> typeValidator type, data, callback
 
 defineValidator "set", (setto,data,callback) -> callback undefined, setto
 
@@ -59,6 +59,19 @@ defineValidator "exists", (data,callback) -> if data? then callback undefined,da
 
 defineValidator "instance", (data,callback) -> if typeof data is 'object' and data.constructor != Object then callback undefined, data else callback "#{ data } (#{typeof data}) is not an instance"
 
+defineValidator "optional", (validator,data,callback) -> if not data then callback() else new Validator(validator).feed(data, callback)
+
+defineValidator "array", (array, data, callback) ->
+    if data.constructor is Function and not callback then return typeValidator(Array,array,data)
+    if not data.constructor is Array then return callback "#{ data } (#{typeof data}) is not an array"
+    if array.length is 0 and data.length isnt 0 then return callback "expected empty array, got #{ data }"
+    async.series _.map(array, ((validator,index) ->
+        (callback) -> 
+            new Validator(validator).feed data[index], callback)),
+    (err,data) ->
+        if err = _.last(err) then return callback err
+        callback null, data
+        
 defineValidator "children", (children,data,callback) ->
     #console.log("children".red, children,"data".red, data,"callback".red,callback)
     if not data then callback('undefined'); return
