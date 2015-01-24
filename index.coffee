@@ -19,7 +19,9 @@ exports.Validator = class Validator
         when Number then @args = [ @validate ]; @validate = @functions.is
         when Object then @args = [ @validate ]; @validate = @functions.children
         when Validator then val = @validate; @validate = val.validate; @args = val.args; if val.child then @child = val.child
-        when Boolean then @validate = @functions.exists; @args = []
+        when Boolean
+            if @validate is true then @validate = @functions.exists; @args = []
+            if @validate is false then @validate = @functions.notexists; @args = []                
     if @child?.constructor is Array then @child = new Validator(@child)
         
   name: -> helpers.find(@functions, (f,name) => if f is @validate then return name else return false )
@@ -56,6 +58,8 @@ defineValidator "is", (compare,data,callback) -> if data is compare then callbac
 defineValidator "default", (defaultvalue,data,callback) -> if data? then callback undefined,data else callback undefined, if defaultvalue.constructor is Function then defaultvalue() else defaultvalue
 
 defineValidator "exists", (data,callback) -> if data? then callback undefined,data else callback "data doesn't exist"
+
+defineValidator "notexists", (data,callback) -> if data? then callback "exists" else callback undefined, data
 
 defineValidator "instance", (data,callback) -> if typeof data is 'object' and data.constructor != Object then callback undefined, data else callback "#{ data } (#{typeof data}) is not an instance"
 
