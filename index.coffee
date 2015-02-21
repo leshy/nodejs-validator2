@@ -42,7 +42,15 @@ defineValidator = exports.defineValidator = (name,f) ->
         if not @validate? then @validate = f; @args = args; else @addChild new Validator(f,args) 
         this
 
-_.map require('./validate.js').Validate, (lvf,name) -> defineValidator name, (args,data,callback) -> helpers.throwToCallback(lvf) data, args, (err) -> callback(err, data if not err?)
+_.map require('./validate.js').Validate, (lvf,name) ->
+    defineValidator name,
+        (args,data,callback) ->
+            if not callback
+                callback = data
+                data = args
+                args = {}                
+            helpers.throwToCallback(lvf) data, args, (err) ->
+                callback(err, data if not err?)
 
 typeValidator = (type,target,callback) -> if type is target?.constructor then callback undefined, target else callback "wrong type '#{ target?.constructor.name }', expected '#{ type.name }'"
 

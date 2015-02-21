@@ -176,6 +176,11 @@
 
   _.map(require('./validate.js').Validate, function(lvf, name) {
     return defineValidator(name, function(args, data, callback) {
+      if (!callback) {
+        callback = data;
+        data = args;
+        args = {};
+      }
       return helpers.throwToCallback(lvf)(data, args, function(err) {
         return callback(err, err == null ? data : void 0);
       });
