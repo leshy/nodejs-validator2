@@ -25,7 +25,7 @@ exports.Validator = class Validator
     if @child?.constructor is Array then @child = new Validator(@child)
         
   name: -> helpers.find(@functions, (f,name) => if f is @validate then return name else return false )
-  feed: (data,callback) -> if not @validate then @execChildren(data,callback) else @validate.apply(this, @args.concat([ data, (err,data) => if err then callback err,data else @execChildren(data,callback) ]))
+  feed: (data,callback) -> if not @validate?.apply? then @execChildren(data,callback) else @validate.apply(this, @args.concat([ data, (err,data) => if err then callback err,data else @execChildren(data,callback) ]))
   execChildren: (data,callback) -> if @child then @child.feed(data,callback) else callback undefined, data
   addChild: (child) -> if @child? then @child.addChild(child) else @child = child
   serialize: -> if @child then [ @name(), @serializeArgs(), @child.serialize() ] else [ @name(), @serializeArgs() ]

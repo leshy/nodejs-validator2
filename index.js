@@ -91,7 +91,8 @@
     };
 
     Validator.prototype.feed = function(data, callback) {
-      if (!this.validate) {
+      var _ref;
+      if (((_ref = this.validate) != null ? _ref.apply : void 0) == null) {
         return this.execChildren(data, callback);
       } else {
         return this.validate.apply(this, this.args.concat([
