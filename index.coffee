@@ -12,16 +12,17 @@ exports.Validator = class Validator
     if @args?.constructor != Array then @args = [ @args ]
     
     switch @validate?.constructor
+        when Validator then return @validate
         when Function then if typeValidatorMatch = _.find(validableTypes, (t) => t == @validate) then @validate = @functions[@validate.name] # can receive a type constructor, will type validate
         when String
             if f = @functions[ @validate ] then @validate = f
             else @args = [ @validate ]; @validate = @functions.is
         when Number then @args = [ @validate ]; @validate = @functions.is
         when Object then @args = [ @validate ]; @validate = @functions.children
-        when Validator then val = @validate; @validate = val.validate; @args = val.args; if val.child then @child = val.child
         when Boolean
             if @validate is true then @validate = @functions.exists; @args = []
-            if @validate is false then @validate = @functions.notexists; @args = []                
+            if @validate is false then @validate = @functions.notexists; @args = []
+    
     if @child?.constructor is Array then @child = new Validator(@child)
         
   name: -> helpers.find(@functions, (f,name) => if f is @validate then return name else return false )
@@ -85,7 +86,6 @@ defineValidator "array", (array, data, callback) ->
         callback null, data
         
 defineValidator "children", (children,data,callback) ->
-    #console.log("children".red, children,"data".red, data,"callback".red,callback)
     if not data then callback('undefined'); return
     async.parallel(helpers.dictMap( children, (validator, name) -> (callback) -> new Validator(validator).feed(data[name], callback)),
         (err,changeddata) -> if err? then callback(err) else callback undefined, _.extend(data,changeddata))
