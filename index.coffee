@@ -51,6 +51,7 @@ _.map require('./validate.js').Validate, (lvf,name) ->
                 data = args
                 args = {}
             helpers.throwToCallback(lvf) data, args, (err) ->
+                if err then err = err.message
                 callback(err, data if not err?)
 
 typeValidator = (type,target,callback) -> if type is target?.constructor then callback undefined, target else callback "wrong type '#{ target?.constructor.name }', expected '#{ type.name }'"
@@ -82,12 +83,14 @@ defineValidator "array", (array, data, callback) ->
         (callback) ->
             new Validator(validator).feed data[index], callback)),
     (err,data) ->
-        if err = _.last(err) then return callback err
+        if err then return callback err
         callback null, data
+
 
 defineValidator "children", (children,data,callback) ->
     if not data then callback('undefined'); return
-    async.parallel(helpers.dictMap( children, (validator, name) -> (callback) -> new Validator(validator).feed(data[name], callback)),
+    async.parallel(helpers.dictMap( children, (validator, name) -> (callback) -> new Validator(validator).feed(data[name], (err,data) ->
+        (if err then err = helpers.capitalize(name) + " " + err); callback(err,data))),
         (err,changeddata) -> if err? then callback(err) else callback undefined, _.extend(data,changeddata))
 
 defineValidator "or", (validators...,data,callback) ->

@@ -177,6 +177,9 @@
         args = {};
       }
       return helpers.throwToCallback(lvf)(data, args, function(err) {
+        if (err) {
+          err = err.message;
+        }
         return callback(err, err == null ? data : void 0);
       });
     });
@@ -271,7 +274,7 @@
         return new Validator(validator).feed(data[index], callback);
       };
     })), function(err, data) {
-      if (err = _.last(err)) {
+      if (err) {
         return callback(err);
       }
       return callback(null, data);
@@ -285,7 +288,12 @@
     }
     return async.parallel(helpers.dictMap(children, function(validator, name) {
       return function(callback) {
-        return new Validator(validator).feed(data[name], callback);
+        return new Validator(validator).feed(data[name], function(err, data) {
+          if (err) {
+            err = helpers.capitalize(name) + " " + err;
+          }
+          return callback(err, data);
+        });
       };
     }), function(err, changeddata) {
       if (err != null) {
