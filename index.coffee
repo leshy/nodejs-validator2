@@ -10,7 +10,7 @@ exports.Validator = class Validator
   constructor: (@validate, @args=[], @child) ->
     if @validate?.constructor is Array then @args = @validate[1]; @child = @validate[2]; @validate = @validate[0] # parsing of serialized validator
     if @args?.constructor != Array then @args = [ @args ]
-    
+
     switch @validate?.constructor
         when Validator then return @validate
         when Function then if typeValidatorMatch = _.find(validableTypes, (t) => t == @validate) then @validate = @functions[@validate.name] # can receive a type constructor, will type validate
@@ -22,9 +22,9 @@ exports.Validator = class Validator
         when Boolean
             if @validate is true then @validate = @functions.exists; @args = []
             if @validate is false then @validate = @functions.notexists; @args = []
-    
+
     if @child?.constructor is Array then @child = new Validator(@child)
-        
+
   name: -> helpers.find(@functions, (f,name) => if f is @validate then return name else return false )
   feed: (data,callback) -> if not @validate?.apply? then @execChildren(data,callback) else @validate.apply(this, @args.concat([ data, (err,data) => if err then callback err,data else @execChildren(data,callback) ]))
   execChildren: (data,callback) -> if @child then @child.feed(data,callback) else callback undefined, data
@@ -40,7 +40,7 @@ defineValidator = exports.defineValidator = (name,f) ->
     Validator::functions[name] = f
     Validator::functions[helpers.capitalize(name)] = f
     Validator::[name] = Validator::[helpers.capitalize(name)] = (args...) ->
-        if not @validate? then @validate = f; @args = args; else @addChild new Validator(f,args) 
+        if not @validate? then @validate = f; @args = args; else @addChild new Validator(f,args)
         this
 
 _.map require('./validate.js').Validate, (lvf,name) ->
@@ -49,7 +49,7 @@ _.map require('./validate.js').Validate, (lvf,name) ->
             if not callback
                 callback = data
                 data = args
-                args = {}                
+                args = {}
             helpers.throwToCallback(lvf) data, args, (err) ->
                 callback(err, data if not err?)
 
@@ -79,12 +79,12 @@ defineValidator "array", (array, data, callback) ->
     if not data.constructor is Array then return callback "#{ data } (#{typeof data}) is not an array"
     if array.length is 0 and data.length isnt 0 then return callback "expected empty array, got #{ data }"
     async.series _.map(array, ((validator,index) ->
-        (callback) -> 
+        (callback) ->
             new Validator(validator).feed data[index], callback)),
     (err,data) ->
         if err = _.last(err) then return callback err
         callback null, data
-        
+
 defineValidator "children", (children,data,callback) ->
     if not data then callback('undefined'); return
     async.parallel(helpers.dictMap( children, (validator, name) -> (callback) -> new Validator(validator).feed(data[name], callback)),
