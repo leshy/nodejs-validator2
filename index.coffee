@@ -4,7 +4,8 @@ _ = require 'underscore'
 async = require 'async'
 helpers = require 'helpers'
 
-exports.v = (args...) -> new Validator(args)
+exports.v = (args...) ->
+    new Validator(args)
 
 exports.Validator = class Validator
   constructor: (@validate, @args=[], @child) ->
