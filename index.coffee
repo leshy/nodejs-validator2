@@ -36,7 +36,7 @@ exports.Validator = class Validator
   functions: {}
 
 defineValidator = exports.defineValidator = (name,f) ->
-    if not name then throw "defineValidator didn't get a name"
+    if not name then console.warn("defineValidator didn't get a name"); return
     name = name.toLowerCase()
     Validator::functions[name] = f
     Validator::functions[helpers.capitalize(name)] = f
