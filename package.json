@@ -15,9 +15,22 @@
     "helpers": "git://github.com/leshy/nodejs-helpers.git"
   },
   "main": "index",
-  "_id": "validator@0.0.1",
+  "_id": "validator2@0.0.1",
   "dist": {
     "shasum": "ba0ea9faf1b253ca661a684194de5a6d4e991c2a"
   },
-  "repository" : { "type" : "git", "url" : "git://github.com/leshy/nodejs-validator2.git" }
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/leshy/nodejs-validator2.git"
+  },
+  "gitHead": "f1f1e3de16e662cbf59c682583e93f79e9284783",
+  "readme": "for now, docs are tests\nhttps://github.com/leshy/nodejs-validator2/blob/master/tests.coffee\n\nI didn't want this package to depend on other packages, so extra features are in\n\n(validated backbone models, compiling to mongodb queries)\n\nhttps://github.com/leshy/nodejs-validator2-extras\n",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/leshy/nodejs-validator2/issues"
+  },
+  "homepage": "https://github.com/leshy/nodejs-validator2#readme",
+  "_shasum": "a9044b5ee74704fdce7c928608f1de2e6faa54d6",
+  "_from": "git://github.com/leshy/nodejs-validator2.git",
+  "_resolved": "git://github.com/leshy/nodejs-validator2.git#f1f1e3de16e662cbf59c682583e93f79e9284783"
 }
