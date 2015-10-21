@@ -62,7 +62,15 @@ defineValidator "type", (args,data,callback) -> typeValidator _.first(args), dat
 validableTypes = [ Object, String, Number, Boolean, Function, Array ]
 _.map validableTypes, (type) -> defineValidator type.name, (args...,data,callback) -> typeValidator type, data, callback
 
-defineValidator "set", (setto,data,callback) -> callback undefined, setto
+defineValidator "set", (setto, data, callback) -> callback undefined, setto
+
+defineValidator "f", (f, data, callback) -> callback undefined, f(data)
+
+defineValidator "check", (f, data) ->
+  if (ret = f(data)) is true then callback undefined, data
+  else callback ret, undefined
+
+defineValidator "asyncf", (f, data ,callback) -> f(data,callback)
 
 defineValidator "is", (compare,data,callback) -> if data is compare then callback undefined, data else callback "wrong value, got #{ data } (#{typeof data}) and expected #{ JSON.stringify(compare) } (#{typeof compare})"
 

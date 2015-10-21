@@ -57,7 +57,9 @@ var Validate = {
     Numericality: function(value, paramsObj){
         var suppliedValue = value;
         var value = Number(value);
-    	var paramsObj = paramsObj || {};
+        var paramsObj = paramsObj || {};
+        var positive = paramsObj.positive || false
+        var negative = paramsObj.negative || false
         var minimum = ((paramsObj.minimum) || (paramsObj.minimum == 0)) ? paramsObj.minimum : null;;
         var maximum = ((paramsObj.maximum) || (paramsObj.maximum == 0)) ? paramsObj.maximum : null;
     	var is = ((paramsObj.is) || (paramsObj.is == 0)) ? paramsObj.is : null;
@@ -66,6 +68,8 @@ var Validate = {
     	var wrongNumberMessage = paramsObj.wrongNumberMessage || "Must be " + is + "!";
     	var tooLowMessage = paramsObj.tooLowMessage || "Must not be less than " + minimum + "!";
     	var tooHighMessage = paramsObj.tooHighMessage || "Must not be more than " + maximum + "!";
+    	var notNegativeMessage = paramsObj.notNegativeMessage || "Must not be negative!";
+    	var notPositiveMessage = paramsObj.notPositiveMessage || "Must not be positive!";
         if (!isFinite(value)) Validate.fail(notANumberMessage);
         if (paramsObj.onlyInteger && (/\.0+$|\.$/.test(String(suppliedValue))  || value != parseInt(value)) ) Validate.fail(notAnIntegerMessage);
     	switch(true){
@@ -75,7 +79,13 @@ var Validate = {
     	  	case (minimum !== null && maximum !== null):
     	  		Validate.Numericality(value, {tooLowMessage: tooLowMessage, minimum: minimum});
     	  		Validate.Numericality(value, {tooHighMessage: tooHighMessage, maximum: maximum});
-    	  		break;
+    	        break;
+            case (positive):
+                 if(value <= 0 ) Validate.fail(notPositiveMessage);
+                 break;
+            case (negative):
+                 if(value >= 0 ) Validate.fail(notNegativeMessage);
+                 break;
     	  	case (minimum !== null):
     	  		if( value < Number(minimum) ) Validate.fail(tooLowMessage);
     			break;
