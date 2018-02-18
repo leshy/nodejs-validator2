@@ -39,6 +39,15 @@ exports.is = (test) ->
     test.done()
 
 
+exports.StringIsShortcut = (test) ->
+    cnt = 0
+    new v.Validator("bla").feed "bla", (err,data) -> if err? then test.fail err else cnt++
+    new v.Validator("bla").feed "blax", (err,data) -> if not err? then test.fail "didn't fail on wrong string" else cnt++
+    test.equals cnt, 2
+    test.done()
+
+
+
 exports.chain = (test) ->
     cnt = 0
     new v.Validator().default('lala').string().feed undefined,
@@ -74,7 +83,6 @@ exports.stringInit = (test) ->
     x.feed(3,(err,data) -> if err? then cnt++ else test.fail('didnt fail'))
     test.equals cnt, 2
     test.done()
-
     
 exports.isNumInit = (test) ->
     x = new v.Validator(3)
@@ -98,7 +106,7 @@ exports.NoChild = (test) ->
 
 exports.ChildrenInit = (test) ->
     cnt = 0
-    x = new v.Validator({bla : "string", a: "array"})
+    x = new v.Validator({bla : "string", a: Array})
     x.feed( {bla: "prdac", a: [ 1, 3 ,4 ] }, (err,data) -> if not err? then cnt++ else test.fail())
     x.feed( {bla: "prdac", a: 3 }, (err,data) -> if err? then cnt++ else test.fail('I should have failed'))
     test.done()
@@ -112,7 +120,7 @@ exports.Serialize = (test) ->
     x = new v.Validator('default', 3).number()
     serialized = x.serialize()
     y = new v.Validator(serialized)
-    test.deepEqual serialized, [ 'default', [ 3 ], [ 'number', [], undefined ] ]
+    test.deepEqual serialized, [ 'default', [ 3 ], [ 'number', [] ] ]
     test.deepEqual y.serialize(), serialized
     test.done()
 
@@ -169,3 +177,29 @@ exports.or = (test) ->
     test.equals cnt, 3
     test.done()
 
+exports.typeShortcut = (test) ->
+    x = new v.Validator(Object).Children({ bla: Number })
+    cnt = 0
+    x.feed 'bla',(err,data) -> cnt++; if not err? then test.fail("matched string")
+    x.feed { bla: 3 },(err,data) -> cnt++; if err? then test.fail("didnt match object")
+    x.feed 55 ,(err,data) -> cnt++; if not err? then test.fail("matched number")
+    test.equals cnt, 3, "cnt isnt 3"
+    test.done()
+
+exports.array = (test) ->
+    x = new v.v().Array([ 'bla', String, Number, v.v().Default(8) ])
+    x.feed [ 'bla', 'blu', 3 ], (err,data) ->
+        
+        test.equals err, undefined
+        test.deepEqual data, [ 'bla', 'blu', 3, 8 ]
+        test.done()
+
+exports.emptyArray = (test) ->
+    x = new v.v().Array([])
+
+    x.feed [ 'bla' ], (err,data) ->
+        test.ok err
+        x.feed [], (err,data) ->
+            test.ok not err
+            test.deepEqual data, []
+            test.done()
