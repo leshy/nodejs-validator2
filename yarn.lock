@@ -2,10 +2,6 @@
 # yarn lockfile v1
 
 
-async@^1.4.2:
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
-
 async@^2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/async/-/async-2.6.0.tgz#61a29abb6fcc026fea77e56d1c6ec53a795951f4"
@@ -14,9 +10,9 @@ async@^2.6.0:
 
 "helpers@git+ssh://git@github.com/leshy/nodejs-helpers.git":
   version "1.0.0"
-  resolved "git+ssh://git@github.com/leshy/nodejs-helpers.git#fc6a6f2d8c604e81b06060b9cd4287f030d64623"
+  resolved "git+ssh://git@github.com/leshy/nodejs-helpers.git#8a0ee8ce5239e162c2a45f8271f0564a7ef923a7"
   dependencies:
-    async "^1.4.2"
+    async "^2.6.0"
     underscore "^1.8.3"
 
 lodash@^4.14.0:
