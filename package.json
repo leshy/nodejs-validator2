@@ -44,7 +44,8 @@
     "url": "https://github.com/leshy/nodejs-validator2/issues"
   },
   "dependencies": {
-    "helpers": "git://github.com/leshy/nodejs-helpers.git",
+    "async": "^2.4.1",
+    "helpers": "git+ssh://git@github.com/leshy/nodejs-helpers.git",
     "underscore": "1.x"
   },
   "description": "dictionary matching/validation",
