@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "async": "^2.6.0",
-    "helpers": "git+ssh://git@github.com/leshy/nodejs-helpers.git",
+    "helpers": "git+https://github.com/leshy/nodejs-helpers.git",
     "underscore": "^1.8.3"
   },
   "description": "dictionary matching/validation",
